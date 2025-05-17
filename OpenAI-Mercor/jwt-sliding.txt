@@ -1,0 +1,110 @@
+Due to increasing users and a lot of suspicious requests, we need to refine our authentication mechanism and implement something more robust. The current system has basic JWT authentication only. 
+
+The following needs to be implemented:
+In the 19-auth-jwt sample project, extend the JWT support to implement a sliding window JWT strategy for more enhanced authentication, making the active user session keep intact for a duration.
+The idea of sliding window authentication is a method of managing user sessions and access tokens where the validity of the token is extended with each request made by the user, within a defined time window.  
+
+Specifically:
+
+1. Introduce a new JwtSlidingWindowStrategy extending PassportStrategy, similar to what we have for JWT, except this validates the deviceId for a user stored in memory or mock DB. Keep this new code in auth/strategies/jwt-sliding-window.strategy.ts
+2. Validate in the JwtSlidingWindowStrategy if the device ID is the same.
+3. Don't forget to extend AuthGuard for this new strategy. File: auth/auth.guard.ts
+4. Feature flag this new strategy (SlidingWindowFlag) in the guard and only activate if the feature flag is turned on. You can set/get the feature flag value from environment variables.
+5. Fallback to the default JWT Behavior if the feature flag is false.
+6. Point to note, since we are utilising two JWT strategies now, we might need to create another strategy for Simple JWT (along with SlidingWindowJWT) i.e. auth/strategies/jwt.strategy.ts
+7. For validate() method in these strategies, return from userService a default user for now. 
+
+Include unit tests for the new flow, covering success and failure cases.
+
+This feature must preserve existing login/token workflows and remain backward compatible with existing clients. We are introducing a feature-flagged Sliding Window JWT strategy that refreshes user session activity time on each authenticated request, based on a valid deviceId provided in the token and verified against stored device session data.
+
+
+Rubric Items (10)
+
+Add item
+
+＝
+#1
+0000
+Must create a new file jwt.strategy.ts
+
+
+
+
+く
+=
+#2
+000g
+Must create a new file jwt-sliding-window.strategy.ts
+
++ =
+
+
+く
+=
+#3
+
+Ensures deviceld is stored in a dedicated service or memory store (mocked DB okay)
+
+
+
+
+く
+=
+#4
+
+Existing login and token behavior continues to work (no regressions in existing auth flow)
+
++ @
+
+
+く
+＝
+#5
+000%
+Ensures the AuthGuard extends the new created Sliding Window strategy and JWT strategy
+
+
+
+
+く
+=
+#6
+000g
+Ensures the AuthGuard checks the new feature flag from environment variables and changes strategy to SlidingWindow when the flag is true
+
+
+=
+
+
+=
+#7
+100
+Unit test with the SlidingWindowFlag=True using the JwtSliding WindowStrategy
+
+
+
+
+く
+=
+#8
+100
+Unit test with the SlidingWindowFlag=False using the default JwtStrategy
+
+
+
+
+く
+=
+#9
+10
+Code follows NestJS best practices (e.g. using services, guards, modules cleanly)
+
+
+
+
+く
+=
+#10
+10
+Implements unit tests for both successful and failed refresh scenarios
