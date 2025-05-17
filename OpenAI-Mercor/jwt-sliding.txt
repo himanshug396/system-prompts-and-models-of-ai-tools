@@ -17,3 +17,94 @@ Specifically:
 Include unit tests for the new flow, covering success and failure cases.
 
 This feature must preserve existing login/token workflows and remain backward compatible with existing clients. We are introducing a feature-flagged Sliding Window JWT strategy that refreshes user session activity time on each authenticated request, based on a valid deviceId provided in the token and verified against stored device session data.
+
+
+Rubric Items (10)
+
+Add item
+
+＝
+#1
+0000
+Must create a new file jwt.strategy.ts
+
+
+
+
+く
+=
+#2
+000g
+Must create a new file jwt-sliding-window.strategy.ts
+
++ =
+
+
+く
+=
+#3
+
+Ensures deviceld is stored in a dedicated service or memory store (mocked DB okay)
+
+
+
+
+く
+=
+#4
+
+Existing login and token behavior continues to work (no regressions in existing auth flow)
+
++ @
+
+
+く
+＝
+#5
+000%
+Ensures the AuthGuard extends the new created Sliding Window strategy and JWT strategy
+
+
+
+
+く
+=
+#6
+000g
+Ensures the AuthGuard checks the new feature flag from environment variables and changes strategy to SlidingWindow when the flag is true
+
+
+=
+
+
+=
+#7
+100
+Unit test with the SlidingWindowFlag=True using the JwtSliding WindowStrategy
+
+
+
+
+く
+=
+#8
+100
+Unit test with the SlidingWindowFlag=False using the default JwtStrategy
+
+
+
+
+く
+=
+#9
+10
+Code follows NestJS best practices (e.g. using services, guards, modules cleanly)
+
+
+
+
+く
+=
+#10
+10
+Implements unit tests for both successful and failed refresh scenarios
