@@ -1,0 +1,16 @@
+Nestjs has a way to implement Swagger, but an open Swagger without authentication is a security risk.
+
+Use samples 11-swagger and 19-auth-jwt for this task. 
+Make changes to the auth module and implement Swagger with proper bearer auth.
+
+Specific changes to be made:
+1. Keep the auth sample project as it is and refactor main.ts and other necessary files in the auth project to implement SwaggerModule.
+2. Add appropriate definition for addBearerAuth, addSecurityRequirements(), and persistAuthorization in Document Builder that ensures passing JWT access_token in swagger UI.
+
+
+Rubric:
+1. Ensure 19-auth-jwt/package.json has dependency @nestjs/swagger
+2. Validate “import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'” exists in 19-auth-jwt/src/main.ts
+3. 19-auth-jwt/src/main.ts has DocumentBuilder.addBearerAuth({type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header',}, 'access_token') 
+4. 19-auth-jwt/src/main.ts has DocumentBuilder.addSecurityRequirements('access_token') 
+5. Ensure Swagger uses swaggerOptions: { persistAuthorization: true} in 19-auth-jwt/src/main.ts while setting up the document
