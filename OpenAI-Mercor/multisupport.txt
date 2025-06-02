@@ -1,0 +1,19 @@
+Use 22-graphql-prisma for this task.
+
+To support multi-DB operations (updates with transaction support), refactor and extend the existing Prisma setup to support multiple databases with isolated clients and a shared extended client interface.
+
+Specific Items to be implemented in PrismaService:
+
+1. Implement a clientFactory(config) function with input  { datasourceUrl1: string; datasourceUrl2: string; } that returns { client1: PrismaClient; client2: PrismaClient; extendedClient: ExtendedPrismaClient; }. Keep read committed isolation, 10s timeout, and 3s wait time.
+2. Create extendedClientFactory(client1, client2) that returns a new extendedClient object. Sample model to update post in both the databases: { post: { async updateModels(): Promise<void> { ... } } }
+3. Extend the PrismaService class to add readOnly extendedClient: ExtendedPrismaClient, accept a constructor config that allows injecting both datasourceUrls (via env variables), and use the super() class to pass the prisma client config. (Remember to add a .env file with two datasourceURL variables)
+4. Override enableShutdownHooks() in the PrismaService to disconnect both clients on app shutdown.
+5. Use the extended client in posts.service.ts to update the post in both databases. 
+6. Remember, you may need to add a second Prisma client to implement this whole feature.
+
+Acceptance Criteria:
+
+1. Multi-client factory correctly instantiates two Prisma clients targeting 2 databases.
+2. extendedClient.updateModels() performs an update operation in both DBs within a transaction.
+3. PrismaService exposes extendedClient to be utilised by other modules across the app. e.g., Used in posts.service.ts to update posts.
+4. A new Prisma client added in the NestJS app (22-graphql-prisma)
