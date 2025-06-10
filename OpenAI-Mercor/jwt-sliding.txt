@@ -108,3 +108,25 @@ Code follows NestJS best practices (e.g. using services, guards, modules cleanly
 #10
 10
 Implements unit tests for both successful and failed refresh scenarios
+
+
+
+
+
+| #  | Criterion                                                                 | Required | Weight    | Rationale                                       |
+| -- | ------------------------------------------------------------------------- | -------- | --------- | ----------------------------------------------- |
+| 1  | Sliding window refresh only if last request < 5 minutes                   | ✅ Yes    | **10000** | Critical security check                         |
+| 2  | Reject token + logout user if >5 minutes                                  | ✅ Yes    | **10000** | Completes the core logic                        |
+| 3  | Token includes `refreshedAt` + updated `iat`                              | ✅ Yes    | **10000** | Needed to enable sliding mechanism              |
+| 4  | Refresh rate-limited to once/minute per deviceId                          | ✅ Yes    | **10000** | Prevents abuse                                  |
+| 5  | Feature flag OFF = fallback to default JWT                                | ✅ Yes    | **8000**  | Ensures backward compatibility                  |
+| 6  | Feature flag ON = use sliding strategy                                    | ✅ Yes    | **8000**  | Ensures switching logic works                   |
+| 7  | AuthGuard extends both JWT + SlidingWindow strategies                     | ✅ Yes    | **6000**  | Required for switching behavior                 |
+| 8  | Validates device ID in `JwtSlidingWindowStrategy`                         | ✅ Yes    | **6000**  | Prevents session hijacking                      |
+| 9  | `users` object supports multiple deviceIds w/ timestamps                  | ❌ No     | 3000      | Structural support                              |
+| 10 | Separate files for `jwt.strategy.ts` and `jwt-sliding-window.strategy.ts` | ❌ No     | 3000      | Clean modular structure                         |
+| 11 | Unit test: SlidingWindowFlag = **True**                                   | ❌ No     | 200       | Ensures path works as expected                  |
+| 12 | Unit test: SlidingWindowFlag = **False**                                  | ❌ No     | 200       | Same                                            |
+| 13 | Unit test: success and failure cases                                      | ❌ No     | 300       | Slightly more important                         |
+| 14 | Code follows NestJS best practices                                        | ❌ No     | 100       | Soft bonus for clean code                       |
+| 15 | Each valid request resets the sliding timer (sliding effect)              | ✅ Yes    | **8000**  | Ensures sliding behavior not just cut-off logic |
